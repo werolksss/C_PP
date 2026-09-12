@@ -1,0 +1,368 @@
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+
+int main()
+{
+    const double PI = 3.14159265358979323846;
+
+    // 1
+    {
+        double x = 14.26;
+        double y = -1.22;
+        double z = 3.5 * pow(10, -2);
+
+        double t =
+            (2 * cos(x - PI / 6)) /
+            (0.5 + pow(sin(y), 2)) *
+            (1 + pow(z, 2) / (3 - pow(z, 2) / 5));
+
+        cout << "1. t = " << t << endl;
+    }
+
+
+    // 2
+    {
+        double x = -4.5;
+        double y = 0.75 * pow(10, -4);
+        double z = 0.845 * pow(10, 2);
+
+        double u =
+            cbrt(8 + pow(abs(x - y), 2) + 1) /
+            (pow(x, 2) + pow(y, 2) + 2)
+            -
+            exp(abs(x - y)) *
+            pow(pow(tan(z), 2) + 1, x);
+
+        cout << "2. u = " << u << endl;
+    }
+
+
+    // 3
+    {
+        double x = 3.74 * pow(10, -2);
+        double y = -0.825;
+        double z = 0.16 * pow(10, 2);
+
+        double v =
+            (1 + pow(sin(x + y), 2)) /
+            abs(x - (2 * y) / (1 + pow(x, 2) * pow(y, 2)))
+            *
+            pow(x, abs(y))
+            +
+            pow(cos(atan(1 / z)), 2);
+
+        cout << "3. v = " << v << endl;
+    }
+
+
+    // 4
+    {
+        double x = 0.4 * pow(10, 4);
+        double y = -0.875;
+        double z = -0.475 * pow(10, -3);
+
+        double w =
+            pow(abs(cos(x) - cos(y)),
+                1 + 2 * pow(sin(y), 2))
+            *
+            (1 + z +
+             pow(z, 2) / 2 +
+             pow(z, 3) / 3 +
+             pow(z, 4) / 4);
+
+        cout << "4. w = " << w << endl;
+    }
+
+
+    // 5
+    {
+        double x = -15.246;
+        double y = 4.642 * pow(10, -2);
+        double z = 20.001 * pow(10, 2);
+
+        double alpha =
+            log(pow(y, -sqrt(abs(x)))) *
+            (x - y / 2)
+            +
+            pow(sin(atan(z)), 2);
+
+        cout << "5. alpha = " << alpha << endl;
+    }
+
+
+    // 6
+    {
+        double x = 16.55 * pow(10, -3);
+        double y = -2.75;
+        double z = 0.15;
+
+        double beta =
+            sqrt(10 * (cbrt(x) + pow(x, y + 2)))
+            *
+            (pow(asin(z), 2) - abs(x - y));
+
+        cout << "6. beta = " << beta << endl;
+    }
+
+
+    // 7
+    {
+        double x = 0.1722;
+        double y = 6.33;
+        double z = 3.25 * pow(10, -4);
+
+        double gamma =
+            5 * atan(x)
+            -
+            (1.0 / 4.0) * acos(x) *
+            (x + 3 * abs(x - y) + pow(x, 2)) /
+            (abs(x - y) * z + pow(x, 2));
+
+        cout << "7. gamma = " << gamma << endl;
+    }
+
+
+    // 8
+    {
+        double x = -2.235 * pow(10, -2);
+        double y = 2.23;
+        double z = 15.221;
+
+        double phi =
+            exp(abs(x - y)) *
+            pow(abs(x - y), x + y) /
+            (atan(x) + atan(z))
+            +
+            cbrt(pow(x, 6) + pow(log(y), 2));
+
+        cout << "8. phi = " << phi << endl;
+    }
+
+
+    // 9
+    {
+        double x = 1.825 * pow(10, 2);
+        double y = 18.225;
+        double z = -3.298 * pow(10, -2);
+
+        double psi =
+            abs(pow(x, y / x) - cbrt(y / x))
+            +
+            (y - x) *
+            (cos(y) - z / (y - x)) /
+            (1 + pow(y - x, 2));
+
+        cout << "9. psi = " << psi << endl;
+    }
+
+
+    // 10
+    {
+        double x = 3.981 * pow(10, -2);
+        double y = -1.625 * pow(10, 3);
+        double z = 0.512;
+
+        double a =
+            pow(2, -x) *
+            sqrt(x + pow(abs(y), 1.0 / 4.0)) *
+            cbrt(exp(x - 1 / sin(z)));
+
+        cout << "10. a = " << a << endl;
+    }
+
+
+    // 11
+    {
+        double x = 6.251;
+        double y = 0.827;
+        double z = 25.001;
+
+        double b =
+            pow(y, cbrt(abs(x)))
+            +
+            pow(cos(y), 3) *
+            (
+                abs(x - y) *
+                (1 + pow(sin(z), 2) / sqrt(x + y))
+            )
+            /
+            (exp(abs(x - y)) + x / 2);
+
+        cout << "11. b = " << b << endl;
+    }
+
+
+    // 12
+    {
+        double x = 3.251;
+        double y = 0.325;
+        double z = 0.466 * pow(10, -4);
+
+        double c =
+            pow(2, pow(y, x))
+            +
+            pow(pow(3, x), y)
+            -
+            y * (atan(z) - PI / 6) /
+            (abs(x) + 1 / (pow(y, 2) + 1));
+
+        cout << "12. c = " << c << endl;
+    }
+
+
+    // 13
+    {
+        double x = 17.421;
+        double y = 10.365 * pow(10, -3);
+        double z = 0.828 * pow(10, 5);
+
+        double f =
+            pow(y + cbrt(x - 1), 1.0 / 4.0) /
+            (
+                abs(x - y) *
+                (pow(sin(z), 2) + tan(z))
+            );
+
+        cout << "13. f = " << f << endl;
+    }
+
+
+    // 14
+    {
+        double x = 12.3 * pow(10, -1);
+        double y = 15.4;
+        double z = 0.252 * pow(10, 3);
+
+        double g =
+            pow(y, x + 1) /
+            (cbrt(abs(y - 2)) + 3)
+            +
+            (x + y / 2) /
+            (2 * abs(x + y)) *
+            pow(x + 1, -1 / sin(z));
+
+        cout << "14. g = " << g << endl;
+    }
+
+
+    // 15
+    {
+        double x = 2.444;
+        double y = 0.869 * pow(10, -2);
+        double z = -0.13 * pow(10, 3);
+
+        double h =
+            (
+                (pow(x, y + 1) + exp(y - 1)) /
+                (1 + x * abs(y - tan(z)))
+            )
+            *
+            (1 + abs(y - x))
+            +
+            pow(abs(y - x), 2) / 2
+            -
+            pow(abs(y - x), 3) / 3;
+
+        cout << "15. h = " << h << endl;
+    }
+
+
+    // 16
+    {
+        double a = 3.7;
+        double b = 0.07;
+        double c = 1.5;
+        double x = 5.75;
+
+        double y =
+            sqrt(c * x)
+            -
+            2.7 *
+            (abs(c) + abs(x)) /
+            (pow(c, 2) * pow(x, 3)) *
+            exp(a * x)
+            +
+            cos(pow(a + b, 2) / (c * x - b));
+
+        cout << "16. y = " << y << endl;
+    }
+
+
+    // 17
+    {
+        double a = 7.5;
+        double b = 1.2;
+        double x = 0.5;
+
+        double y =
+            4.5 * pow(a + b, 2) /
+            pow(a - b, 2)
+            -
+            sqrt((a + b) * (a - b))
+            +
+            pow(10, -1) *
+            log(a - b) / log(a + b) *
+            exp(pow(x, 2));
+
+        cout << "17. y = " << y << endl;
+    }
+
+
+    // 18
+    {
+        double a = 5.1;
+        double b = 0.7;
+        double x = -0.05;
+
+        double y =
+            2.4 * abs((pow(x, 2) + b) / a)
+            +
+            (a - b) * pow(sin(a - b), 2)
+            +
+            pow(10, -2) * (x - b);
+
+        cout << "18. y = " << y << endl;
+    }
+
+
+    // 19
+    {
+        double a = 0.1;
+        double b = 2.4;
+        double x = -0.3;
+
+        double y =
+            (a * x - sqrt(b)) /
+            (5.7 * (pow(x, 2) + pow(b, 2)))
+            -
+            (abs(x + b) - pow(a, 2)) /
+            pow(x, 2) *
+            pow(tan(b), 2);
+
+        cout << "19. y = " << y << endl;
+    }
+
+
+    // 20
+    {
+        double a = 4.5;
+        double c = 7.4;
+        double d = -2.1;
+        double x = 0.15;
+
+        double y =
+            sqrt((c - d * pow(x, 2)) / x)
+            +
+            log(pow(x, 2) + c) /
+            (0.7 * x + a * d)
+            -
+            pow(10, -2) /
+            (c - d * pow(x, 3));
+
+        cout << "20. y = " << y << endl;
+    }
+
+    return 0;
+}
