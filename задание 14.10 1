@@ -1,0 +1,14 @@
+// C++
+// Файл geometry.h
+
+#ifndef GEOMETRY_H
+#define GEOMETRY_H
+
+namespace geometry {
+    double circleArea(double radius);
+    double circumference(double radius);
+    double triangleArea(double a, double b, double c);
+    double sphereVolume(double radius);
+}
+
+#endif
