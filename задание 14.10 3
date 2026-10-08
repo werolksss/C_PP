@@ -1,0 +1,321 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <random>
+#include <cmath>
+#include <numeric>
+#include <map>
+#include <fstream>
+#include <iomanip>
+#include <sstream>
+#include <chrono>
+#include <ctime>
+#include <locale>
+#include <codecvt>
+#include <stdexcept>
+#include "geometry.h"
+#ifdef _WIN32
+#include <windows.h>
+#endif
+using namespace std;
+
+mt19937 gen(random_device{}());
+wstring_convert<codecvt_utf8<char32_t>, char32_t> utf;
+
+string line(string prompt) {
+    cout << prompt;
+    string s;
+    if (!getline(cin, s)) throw runtime_error("Ввод завершён.");
+    return s;
+}
+template<class T> T read(string prompt) {
+    istringstream s(line(prompt));
+    T x; string extra;
+    if (!(s >> x) || (s >> extra)) throw runtime_error("Неверный ввод.");
+    return x;
+}
+vector<int> randomArray(int n, int low = -30, int high = 30) {
+    vector<int> a(n);
+    for (int& x : a) x = uniform_int_distribution<int>(low, high)(gen);
+    return a;
+}
+void print(const vector<int>& a) {
+    for (int x : a) cout << x << ' ';
+    cout << '\n';
+}
+char32_t lower(char32_t c) {
+    if ((c >= U'A' && c <= U'Z') || (c >= U'А' && c <= U'Я')) return c + 32;
+    return c == U'Ё' ? U'ё' : c;
+}
+char32_t upper(char32_t c) {
+    if ((c >= U'a' && c <= U'z') || (c >= U'а' && c <= U'я')) return c - 32;
+    return c == U'ё' ? U'Ё' : c;
+}
+
+struct Date { int d, m, y; };
+bool leap(int y) { return y % 400 == 0 || (y % 4 == 0 && y % 100 != 0); }
+int days(int m, int y) {
+    int a[] = {31,28,31,30,31,30,31,31,30,31,30,31};
+    return a[m - 1] + (m == 2 && leap(y));
+}
+int serial(Date t) {
+    int y = t.y - 1, n = 365*y + y/4 - y/100 + y/400 + t.d - 1;
+    for (int m = 1; m < t.m; ++m) n += days(m, t.y);
+    return n;
+}
+Date today() {
+    time_t now = time(nullptr);
+    tm t = *localtime(&now);
+    return {t.tm_mday, t.tm_mon + 1, t.tm_year + 1900};
+}
+Date birthday(Date b, int y) {
+    b.y = y;
+    b.d = min(b.d, days(b.m, y));
+    return b;
+}
+Date next(Date t) {
+    if (++t.d > days(t.m, t.y)) {
+        t.d = 1;
+        if (++t.m > 12) { t.m = 1; ++t.y; }
+    }
+    return t;
+}
+string dateText(Date t) {
+    ostringstream s;
+    s << setfill('0') << setw(4) << t.y << '-'
+      << setw(2) << t.m << '-' << setw(2) << t.d;
+    return s.str();
+}
+
+void task1() {
+    istringstream s(line("Три числа: "));
+    double a, b, c; string extra;
+    if (!(s >> a >> b >> c) || (s >> extra) ||
+        !isfinite(a) || !isfinite(b) || !isfinite(c))
+        throw runtime_error("Введите три конечных числа.");
+
+    double product = 1; int n = 0;
+    // По примеру задания учитываются только положительные числа.
+    for (double x : {a,b,c}) if (x > 0) { product *= x; ++n; }
+    cout << "Среднее арифметическое: " << (a+b+c)/3 << '\n';
+    if (n) cout << "Среднее геометрическое положительных: "
+                << (n == 2 ? sqrt(product) : pow(product, 1.0/n)) << '\n';
+    else cout << "Положительных чисел нет.\n";
+    cout << "Максимальное по модулю: " << max({fabs(a),fabs(b),fabs(c)}) << '\n';
+}
+
+void task2() {
+    auto a = randomArray(15);
+    int sum = 0, count = 0;
+    for (int x : a) { if (x > 0) sum += x; count += x < 0; }
+    print(a);
+    cout << "Сумма положительных: " << sum << "\nОтрицательных: " << count
+         << "\nМинимум: " << *min_element(a.begin(),a.end())
+         << "\nМаксимум: " << *max_element(a.begin(),a.end()) << '\n';
+}
+
+void task3() {
+    Date b, t = today();
+    istringstream s(line("Дата рождения: день месяц год: "));
+    string extra;
+    if (!(s >> b.d >> b.m >> b.y) || (s >> extra) ||
+        b.y < 1 || b.y > 9999 || b.m < 1 || b.m > 12 ||
+        b.d < 1 || b.d > days(b.m,b.y) || serial(b) > serial(t))
+        throw runtime_error("Некорректная дата.");
+
+    string names[] = {"понедельник","вторник","среда","четверг",
+                      "пятница","суббота","воскресенье"};
+    Date n = birthday(b,t.y);
+    int age = t.y-b.y-(serial(t)<serial(n));
+    if (serial(n)<serial(t)) n = birthday(b,t.y+1);
+
+    cout << "Сегодня: " << dateText(t)
+         << "\nДень рождения: " << names[serial(b)%7]
+         << "\nПолных лет: " << age
+         << "\nДней до ДР: " << serial(n)-serial(t) << '\n';
+}
+
+void task4() {
+    istringstream s(line("Введите 10–20 оценок от 2 до 5: "));
+    vector<int> a; map<int,int> f; int x;
+    while (s >> x) {
+        if (x<2 || x>5) throw runtime_error("Оценки должны быть от 2 до 5.");
+        a.push_back(x); ++f[x];
+    }
+    int n = a.size();
+    if (!s.eof() || n<10 || n>20) throw runtime_error("Нужно 10–20 оценок.");
+
+    double mean = accumulate(a.begin(),a.end(),0.0)/n, variance = 0;
+    int frequency = 0, mode = a[0];
+    for (auto [value,count] : f) frequency = max(frequency,count);
+    for (int value : a) if (f[value]==frequency) { mode=value; break; }
+    for (int value : a) variance += pow(value-mean,2);
+    sort(a.begin(),a.end());
+
+    cout << "Среднее: " << mean
+         << "\nМедиана: " << (a[(n-1)/2]+a[n/2])/2.0
+         << "\nМода: " << mode << "\nВсе моды: ";
+    for (auto [value,count] : f) if (count==frequency) cout << value << ' ';
+    cout << "\nСтандартное отклонение: " << sqrt(variance/(n-1)) << '\n';
+}
+
+void task5() {
+    auto a = randomArray(20);
+    cout << "Исходный: "; print(a);
+    int x = read<int>("Число для поиска: ");
+    cout << (find(a.begin(),a.end(),x)!=a.end() ? "Найдено\n" : "Не найдено\n");
+    cout << "Чётных: " << count_if(a.begin(),a.end(),[](int v){return v%2==0;}) << '\n';
+    sort(a.begin(),a.end()); cout << "По возрастанию: "; print(a);
+    reverse(a.begin(),a.end()); cout << "По убыванию: "; print(a);
+
+    auto b = randomArray(1000,-10000,10000), c = b;
+    auto start = chrono::steady_clock::now();
+    sort(b.begin(),b.end());
+    auto first = chrono::steady_clock::now()-start;
+    start = chrono::steady_clock::now();
+    stable_sort(c.begin(),c.end());
+    auto second = chrono::steady_clock::now()-start;
+    cout << "1000 элементов, sort: "
+         << chrono::duration_cast<chrono::nanoseconds>(first).count()
+         << " нс; stable_sort: "
+         << chrono::duration_cast<chrono::nanoseconds>(second).count() << " нс\n";
+}
+
+void task6() {
+    auto s = utf.from_bytes(line("Строка: "));
+    auto sub = utf.from_bytes(line("Подстрока: "));
+    auto u = s, r = s;
+    transform(u.begin(),u.end(),u.begin(),upper);
+    cout << "Длина: " << s.size() << "\nВерхний регистр: " << utf.to_bytes(u) << '\n';
+    auto p = s.find(sub);
+    if (p==u32string::npos) cout << "Подстрока не найдена.\n";
+    else cout << "Позиция с 1: " << p+1 << '\n';
+    replace(r.begin(),r.end(),U'а',U'*');
+    cout << "Замена: " << utf.to_bytes(r) << '\n';
+    reverse(s.begin(),s.end());
+    cout << "Наоборот: " << utf.to_bytes(s) << '\n';
+}
+
+void task7() {
+    auto s = utf.from_bytes(line("Текст: ")) + U" ";
+    map<u32string,int> f; u32string word;
+    for (auto c : s) {
+        c = lower(c);
+        if ((c>=U'a' && c<=U'z') || (c>=U'а' && c<=U'я') || c==U'ё')
+            word += c;
+        else if (!word.empty()) { ++f[word]; word.clear(); }
+    }
+    cout << "Частоты:\n";
+    for (auto [w,n] : f) cout << utf.to_bytes(w) << ": " << n << '\n';
+    cout << "Уникальные по алфавиту:\n";
+    for (auto [w,n] : f) cout << utf.to_bytes(w) << '\n';
+    vector<pair<u32string,int>> top(f.begin(),f.end());
+    sort(top.begin(),top.end(),[](auto a,auto b){
+        return a.second!=b.second ? a.second>b.second : a.first<b.first;
+    });
+    cout << "Три самых частых:\n";
+    for (size_t i=0; i<min(size_t(3),top.size()); ++i)
+        cout << utf.to_bytes(top[i].first) << ": " << top[i].second << '\n';
+}
+
+struct Student { string name, group; double score; };
+void save(string path, const vector<Student>& a) {
+    ofstream f(path);
+    for (auto s : a)
+        f << quoted(s.name) << ' ' << quoted(s.group) << ' '
+          << setprecision(17) << s.score << '\n';
+    if (!f) throw runtime_error("Ошибка записи файла.");
+}
+
+void task8() {
+    int n = read<int>("Количество студентов: ");
+    if (n<=0) throw runtime_error("Количество должно быть положительным.");
+    vector<Student> a, filtered;
+    for (int i=0; i<n; ++i) {
+        Student s{line("ФИО: "),line("Группа: "),read<double>("Средний балл: ")};
+        if (s.name.empty() || s.group.empty() || !isfinite(s.score) ||
+            s.score<2 || s.score>5) throw runtime_error("Неверные данные.");
+        a.push_back(s);
+    }
+    save("students.txt",a);
+    a.clear();
+    ifstream f("students.txt"); Student s;
+    while (f >> quoted(s.name) >> quoted(s.group) >> s.score) a.push_back(s);
+    if (a.size()!=size_t(n)) throw runtime_error("Ошибка чтения файла.");
+
+    cout << "Прочитано:\n";
+    for (auto s : a) {
+        cout << s.name << " | " << s.group << " | " << s.score << '\n';
+        if (s.score>4.5) filtered.push_back(s);
+    }
+    auto best = max_element(a.begin(),a.end(),[](auto x,auto y){return x.score<y.score;});
+    cout << "Максимальный балл: " << best->name << " — " << best->score
+         << "\nБалл выше 4.5:\n";
+    for (auto s : filtered) cout << s.name << " | " << s.group << " | " << s.score << '\n';
+    save("students_filtered.txt",filtered);
+}
+
+void task9() {
+    auto a = randomArray(7,-20,35);
+    vector<string> dates; Date d = today();
+    for (int i=0; i<7; ++i) { dates.push_back(dateText(d)); d=next(d); }
+    int low = *min_element(a.begin(),a.end()), high = *max_element(a.begin(),a.end());
+    double mean = accumulate(a.begin(),a.end(),0.0)/7;
+    ofstream f("weather.json");
+    f << "{\"days\":[";
+    cout << "Гистограмма: # = 1 градус, | = ноль.\n";
+    for (int i=0; i<7; ++i) {
+        cout << dates[i] << ' ' << setw(3) << a[i] << ' '
+             << string(20-max(0,-a[i]),' ') << string(max(0,-a[i]),'#')
+             << '|' << string(max(0,a[i]),'#') << '\n';
+        f << (i ? "," : "") << "{\"date\":\"" << dates[i]
+          << "\",\"temperature\":" << a[i] << '}';
+    }
+    cout << "Средняя: " << mean << "\nМинимум: " << low << "\nМаксимум: " << high << '\n';
+    f << "],\"average\":" << setprecision(17) << mean
+      << ",\"minimum\":" << low << ",\"maximum\":" << high;
+    for (int value : {low,high}) {
+        cout << (value==low ? "Самые холодные: " : "Самые тёплые: ");
+        f << (value==low ? ",\"coldest_days\":[" : ",\"warmest_days\":[");
+        bool first = true;
+        for (int i=0; i<7; ++i) if (a[i]==value) {
+            cout << dates[i] << ' ';
+            f << (first ? "" : ",") << '"' << dates[i] << '"';
+            first = false;
+        }
+        cout << '\n'; f << ']';
+    }
+    f << '}';
+    if (!f) throw runtime_error("Ошибка записи weather.json.");
+}
+
+void task10() {
+    double r = read<double>("Радиус: ");
+    cout << "Площадь круга: " << geometry::circleArea(r)
+         << "\nДлина окружности: " << geometry::circumference(r)
+         << "\nОбъём шара: " << geometry::sphereVolume(r) << '\n';
+    double a = read<double>("Сторона a: "), b = read<double>("Сторона b: "),
+           c = read<double>("Сторона c: ");
+    cout << "Площадь треугольника: " << geometry::triangleArea(a,b,c) << '\n';
+}
+
+int main() {
+#ifdef _WIN32
+    SetConsoleCP(CP_UTF8);
+    SetConsoleOutputCP(CP_UTF8);
+#endif
+    void (*tasks[])() = {task1,task2,task3,task4,task5,task6,task7,task8,task9,task10};
+    while (true) {
+        cout << "\n1.Математика 2.Случайные числа 3.Дата рождения 4.Статистика"
+                "\n5.Сортировка 6.Строки 7.Слова 8.Студенты 9.Погода 10.Геометрия 0.Выход\n";
+        try {
+            int n = read<int>("Задача: ");
+            if (!n) break;
+            if (n<1 || n>10) throw runtime_error("Нет такой задачи.");
+            tasks[n-1]();
+        } catch (const exception& e) {
+            cout << "Ошибка: " << e.what() << '\n';
+            if (cin.eof()) break;
+        }
+    }
+}
