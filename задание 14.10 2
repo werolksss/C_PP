@@ -1,0 +1,41 @@
+// C++
+// Файл geometry.cpp
+
+#include "geometry.h"
+#include <cmath>
+#include <algorithm>
+#include <stdexcept>
+
+namespace geometry {
+    const double PI = std::acos(-1.0);
+
+    void checkRadius(double radius) {
+        if (!std::isfinite(radius) || radius < 0)
+            throw std::invalid_argument("Некорректный радиус.");
+    }
+
+    double circleArea(double radius) {
+        checkRadius(radius);
+        return PI * radius * radius;
+    }
+
+    double circumference(double radius) {
+        checkRadius(radius);
+        return 2 * PI * radius;
+    }
+
+    double triangleArea(double a, double b, double c) {
+        if (!std::isfinite(a) || !std::isfinite(b) ||
+            !std::isfinite(c) || std::min({a, b, c}) <= 0 ||
+            a + b <= c || a + c <= b || b + c <= a)
+            throw std::invalid_argument("Такого треугольника не существует.");
+
+        double p = (a + b + c) / 2;
+        return std::sqrt(p * (p - a) * (p - b) * (p - c));
+    }
+
+    double sphereVolume(double radius) {
+        checkRadius(radius);
+        return 4 * PI * radius * radius * radius / 3;
+    }
+}
